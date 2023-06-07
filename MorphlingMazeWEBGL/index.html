@@ -1,43 +1,59 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta charset="utf8">
+    <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | MorphlingMaze</title>
+    <style>
+      #unity-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #231F20;
+      }
+    </style>
   </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=1920 height=1080 style="width: 1920px; height: 1080px; background: #231F20"></canvas>
-    <script src="Build/MorphlingMazeWEBGLMay23.loader.js"></script>
+    <canvas id="unity-canvas" width="1920" height="1080"></canvas>
+    <script src="Build/MorphlingMazeWEBGL.loader.js"></script>
     <script>
+      var canvas = document.querySelector("#unity-canvas");
+
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
 
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
-
         document.body.style.textAlign = "left";
       }
 
-      var gameInstance = createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/MorphlingMazeWEBGLMay23.data",
-        frameworkUrl: "Build/MorphlingMazeWEBGLMay23.framework.js",
-        codeUrl: "Build/MorphlingMazeWEBGLMay23.wasm",
+      function resizeGame() {
+        var aspectRatio = 1920 / 1080; // Set this to the aspect ratio of your game
+        var newHeight = Math.min(window.innerHeight, window.innerWidth / aspectRatio);
+        var newWidth = newHeight * aspectRatio;
+
+        canvas.style.width = newWidth + 'px';
+        canvas.style.height = newHeight + 'px';
+      }
+
+      // Call resizeGame function when the page loads
+      resizeGame();
+
+      // Call resizeGame function whenever the window is resized
+      window.addEventListener('resize', resizeGame);
+
+      createUnityInstance(canvas, {
+        dataUrl: "Build/MorphlingMazeWEBGL.data",
+        frameworkUrl: "Build/MorphlingMazeWEBGL.framework.js",
+        codeUrl: "Build/MorphlingMazeWEBGL.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Elsewhere",
         productName: "MorphlingMaze",
         productVersion: "0.1",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
       });
-
-      function SetFullscreen() {
-        gameInstance.SetFullscreen(1);
-      }
-      
-      window.addEventListener("resize", SetFullscreen);
     </script>
   </body>
 </html>
